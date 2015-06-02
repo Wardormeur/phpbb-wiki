@@ -1,0 +1,24 @@
+services:
+    wardormeur.wiki.version:
+        class: wardormeur\wiki\version
+        arguments:
+            - @config
+            - @dbal.conn
+            - @user
+            - %core.table_prefix%
+            - %core.php_ext%
+            - %core.root_path%    
+    wardormeur.wiki.listener:
+        class: wardormeur\wiki\event\wiki_listener
+        arguments:
+            - @template
+            - @user
+            - @dbal.conn
+            - @auth
+            - @request
+            - @cache.driver
+            - %core.root_path%
+            - %core.php_ext%
+            - @wardormeur.wiki.version
+        tags:
+            - { name: event.listener }

@@ -1,0 +1,34 @@
+{
+    "name": "wardormeur/wiki",
+    "type": "phpbb-extension",
+    "description": "Allows posts to be shared and versionned",
+    "homepage": "http://github.com/wardormeur/wiki",
+    "version": "0.0.1",
+    "time": "2015-02-09",
+    "keywords": [
+        "phpbb",
+        "extension",
+        "integration",
+        "wiki",
+		"collaboration"
+    ],
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Guillaume Feliciano"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "phpbb/epv": "dev-master"
+    },
+    "extra": {
+        "display-name": "PhpBB Wiki",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.1.2,<3.2.*@dev"
+        }    
+	}
+	
+}
