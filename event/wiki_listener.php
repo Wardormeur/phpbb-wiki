@@ -12,6 +12,7 @@ class wiki_listener implements EventSubscriberInterface
         return array(
             'core.delete_posts_before'	=>	'listen_delete_related_post_wiki',
 			'core.viewtopic_modify_post_action_conditions'	=>	'listen_modify_display_editable',
+			'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_editable',
 			'core.posting_modify_template_vars'	=>	'listen_add_make_wiki',
 			'core.submit_post_end'	=>	'listen_add_version'
 		);
@@ -57,9 +58,15 @@ class wiki_listener implements EventSubscriberInterface
 	//Can he edit the wiki post?
 	public function listen_modify_display_editable($event)
 	{	
-	
-		$this->template->assign_var('force_edit_allowed', ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
-			&& ($this->version->is_wiki($event['row']['post_id'])>0) );
+		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
+			&& ($this->version->is_wiki($event['row']['post_id'])>0) ;
+	}
+
+	//Can he edit the wiki post?
+	public function listen_modify_posting_editable($event)
+	{	
+		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
+			&& ($this->version->is_wiki($event['post_data']['post_id'])>0) ;
 	}
 	
 	//save a new version when it's a wiki
