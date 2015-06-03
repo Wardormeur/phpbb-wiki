@@ -17,19 +17,14 @@ class install_wiki extends \phpbb\db\migration\migration
 		global $config;
 		// Default settings to start with.
 	
-		$config->set('wwiki_version_nb', 0);
+		$config->set('wwiki_version_nb', 3);
 	
-		$settings_ary = array(
-			'wwiki_version_nb'		=> 0 //nb of versions we want to save		
-		);
-
 		return(array(	
 			array('permission.add', array('a_wwiki_edit')), 
 			array('permission.add', array('m_wwiki_edit')), 
 			array('permission.add', array('m_wwiki_edit', false)), 
 			array('permission.add', array('u_wwiki_edit')), 
 			array('permission.add', array('u_wwiki_edit', false)), 
-			//array('config.add', $settings_ary),
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',

@@ -12,7 +12,8 @@ class wiki_listener implements EventSubscriberInterface
         return array(
             'core.delete_posts_before'	=>	'listen_delete_related_post_wiki',
 			'core.viewtopic_modify_post_action_conditions'	=>	'listen_modify_display_editable',
-			'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_editable',
+			'core.modify_posting_auth'	=>	'listen_modify_posting_mods_editable',
+			'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_users_editable',
 			'core.posting_modify_template_vars'	=>	'listen_add_make_wiki',
 			'core.submit_post_end'	=>	'listen_add_version',
 			'core.user_setup'		=>	'set_language_once_and_for_all'
@@ -60,22 +61,55 @@ class wiki_listener implements EventSubscriberInterface
 	//Can he edit the wiki post? Display on viewtopic
 	public function listen_modify_display_editable($event)
 	{	
-	
-		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
-			&& ($this->version->is_wiki($event['row']['post_id']) > 0 ) ;
+		$wiki = $this->version->is_wiki($event['row']['post_id']);
+		if($wiki)
+		{
+			$locker_id = $this->version->get_lock($event['row']['post_id']);
+			$event['force_edit_allowed'] = (int) ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit'))  ;
+		}
 	}
-
-	//Can he edit the wiki post?Display on posting.php
-	public function listen_modify_posting_editable($event)
+	
+	//Can mods edit the wiki post?Display on posting.php
+	public function listen_modify_posting_users_editable($event)
 	{	
 		$post_id = $event['post_data']['post_id'];
-		$locked = $this->version->get_lock($post_id);
-		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
-			&& ($this->version->is_wiki($post_id)>0) && !$locked ;
-		if ($event['force_edit_allowed']){
-			$this->version->set_lock($this->version->get_wiki_by_post($post_id),true);
-		}else{//you're allowed to edit, likely, but you cant access it cause either it's locked, or it's not a wiki
-			trigger_error($this->user->lang['WIKI_EDITION_ONGOING']);
+		$wiki = $this->version->is_wiki($post_id);
+		
+		if($wiki)
+		{
+			$locker_id = $this->version->get_lock($post_id);
+			$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
+				&& ($wiki >0) && ( $locker_id == $this->user->data['user_id'] ||  $locker_id == 0 || $locker_id == null  ) ;
+
+			if ($event['force_edit_allowed'])
+			{
+				$this->version->set_lock($this->version->get_wiki_by_post($post_id),$this->user->data['user_id']);
+			}else{//you're allowed to edit, likely, but you cant access it cause either it's locked, or it's not a wiki
+				trigger_error($this->user->lang['WIKI_EDITION_ONGOING']);
+			}
+		}
+	}
+	
+	//kudos to rxu
+	//Can users edit the wiki post?Display on posting.php
+	public function listen_modify_posting_mods_editable($event)
+	{	
+		$post_id = $event['post_id'];
+		$wiki = $this->version->is_wiki($post_id);
+		
+		if($wiki)
+		{
+			$locker_id = $this->version->get_lock($post_id);
+			//Wont allow users to edit actually
+			$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
+				&& ($wiki >0) && ( $locker_id == $this->user->data['user_id'] ||  $locker_id == 0 || $locker_id == null  ) ;
+
+			if ($event['force_edit_allowed'])
+			{
+				$this->version->set_lock($this->version->get_wiki_by_post($post_id),$this->user->data['user_id']);
+			}else{//you're allowed to edit, likely, but you cant access it cause either it's locked, or it's not a wiki
+				trigger_error($this->user->lang['WIKI_EDITION_ONGOING']);
+			}
 		}
 	}
 	
@@ -92,8 +126,10 @@ class wiki_listener implements EventSubscriberInterface
 			$wiki_id = $this->version->get_wiki_by_post($post_id);
 			if($wiki == 'on')
 			{// Is active or want to activate
+				echo 'add_v';
 				$this->version->add_version($wiki_id,$message);
-				$this->version->set_lock($wiki_id,false);
+				$this->version->set_lock($wiki_id,0);
+				$this->version->clean_version($wiki_id,$post_id);
 			}else{//Is inactive or want to deactivate
 				$this->version->deactivate($wiki_id,$post_id);
 			}

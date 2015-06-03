@@ -19,6 +19,7 @@ class version{
 		$this->db = $db;
 		$this->phpbb_user = $user;
 		$this->user = $user;
+		$this->config = $config;
 		$this->table_prefix = $table_prefix;
 		$this->phpbb_phpEx = $phpEx;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -67,17 +68,17 @@ class version{
 	
 	public function is_wiki($post_id)
 	{
-		$version_count = 0;
-		$sql = 'SELECT COUNT(post_id) AS version_count
+		$wiki_count = 0;
+		$sql = 'SELECT COUNT(post_id) AS wiki_count
         FROM ' . $this->table_prefix."wwiki_posts WHERE post_id=$post_id";
 
 		$result = $this->db->sql_query($sql);
 
-		$version_count = (int) $this->db->sql_fetchfield('version_count');
+		$wiki_count = (int) $this->db->sql_fetchfield('wiki_count');
 
 		$this->db->sql_freeresult($result);
 
-		return $version_count;
+		return $wiki_count;
 	}
 	
 	public function deactivate($wiki_id,$post_id)
@@ -119,20 +120,55 @@ class version{
 		return $wiki_ids[count($wiki_ids)-1];
 	}
 	
-	//This should be another service
-	public function set_lock($wiki_id, $status)
+	private function get_nb_version($wiki_id)
 	{
-		$locked = (int) $status;
-		$sql = 'UPDATE '.$this->table_prefix."wwiki_contents SET locked = $locked WHERE wiki_id=$wiki_id "; //in previous version, i was targeting only the last version. I dont care anymore.  
+		$versions = 0;
+		$sql = 'SELECT COUNT(wiki_id) AS version_count
+        FROM ' . $this->table_prefix."wwiki_contents WHERE wiki_id=$wiki_id";
+
+		$result = $this->db->sql_query($sql);
+
+		$versions = (int) $this->db->sql_fetchfield('version_count');
+
+		$this->db->sql_freeresult($result);
+		
+		return $versions;
+	}
+	
+	
+	public function clean_version ($wiki_id, $post_id){
+		$versions = $this->get_nb_version($wiki_id);
+		$max_version = $this->config['wwiki_version_nb'];
+		if($versions > $max_version) 
+		{
+				
+			for($i = 0; $i<($versions-$max_version); $i++)
+			{
+				$sql = 'SELECT MIN(version_id) as min_version FROM '.$this->table_prefix."wwiki_contents WHERE wiki_id = $wiki_id";
+				
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+				$this->remove_version($wiki_id,$row['min_version']);
+			}
+		}
+	}
+	
+	
+	//This should be another service
+	public function set_lock($wiki_id, $locker_id)
+	{
+		$sql = 'UPDATE '.$this->table_prefix."wwiki_contents SET locker_id = $locker_id WHERE wiki_id=$wiki_id "; //in previous version, i was targeting only the last version. I dont care anymore.  
 		$this->db->sql_query($sql);
 	}
 	
 	public function get_lock($post_id){
 		$wiki_id = $this->get_wiki_by_post($post_id);
-		$sql = 'SELECT locked FROM '.$this->table_prefix."wwiki_contents WHERE wiki_id = $wiki_id";
+		$sql = 'SELECT locker_id FROM '.$this->table_prefix."wwiki_contents WHERE wiki_id = $wiki_id";
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
-		return $row['locked'];
+		$this->db->sql_freeresult($result);
+		return $row['locker_id'];
 	}
 	
 }

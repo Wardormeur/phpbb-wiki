@@ -12,6 +12,7 @@ namespace wardormeur\wiki\acp;
 
 class wiki_module
 {
+	public	$u_action;
 
 	function main($id, $mode)
 	{
@@ -28,5 +29,21 @@ class wiki_module
 		$this->tpl_name = 'wiki_body';
 
 		add_form_key('wikiunicornfart');
+		if ($this->request->is_set_post('submit'))
+		{
+			if (!check_form_key('wikiunicornfart'))
+			{
+				trigger_error($this->user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+			$version_nb = $this->request->variable('version_nb','');
+			$this->config->set('wwiki_version_nb',$version_nb);
+			trigger_error($this->user->lang['SETTINGS_SUCCESS'] . adm_back_link($this->u_action));
+	
+		}
+		$this->template->assign_var('VERSION_NB', $this->config['wwiki_version_nb']);
+		
+		
 	}
+	
+
 }

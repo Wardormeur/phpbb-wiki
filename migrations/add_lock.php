@@ -23,7 +23,7 @@ class add_lock extends \phpbb\db\migration\migration
 			array('add_columns' 	=> 
 				array($this->table_prefix . 'wwiki_contents'	=> 
 					array(
-						'locked'	=> array('BOOL', 0),
+						'locker_id'	=> array('UINT', null),
 					)
 				)
 			);
