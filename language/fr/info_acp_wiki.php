@@ -37,8 +37,10 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 $lang = array_merge($lang, array(
 	'ACP_WIKI_TITLE'				=> 'Wiki settings !',
-	'POST_WIKI'				=> 'Wiki post?',
-	'VERSION_NB'			=> 'Number of previous version saved',
+	'POST_WIKI'				=> 'Transformer en wiki',
+	'ACP_WIKI_SETTINGS'		=> 'Wiki options',
+	'VERSION_NB'			=> 'Nombre de versions sauvegardées max',
+	'WIKI_EDITION_ONGOING'	=> 'QQun est déjà en train d\'éditer ce post, veuillez attendre',
 	'SETTINGS_ERROR'		=> 'There was an error saving your settings. Please submit the back trace with your error report.',
 	'SETTINGS_SUCCESS'		=> 'The settings were successfully saved',
 	)

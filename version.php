@@ -111,7 +111,6 @@ class version{
 		$wiki_ids = [];
 		$sql = 'SELECT wiki_id FROM '.$this->table_prefix."wwiki_posts WHERE post_id = $post_id";
 		$result = $this->db->sql_query($sql);
-		var_dump($sql);
 		while ($version = $this->db->sql_fetchrow($result))
 		{
 			$wiki_ids[] = $version['wiki_id'];
@@ -119,5 +118,22 @@ class version{
 		$this->db->sql_freeresult($result);
 		return $wiki_ids[count($wiki_ids)-1];
 	}
+	
+	//This should be another service
+	public function set_lock($wiki_id, $status)
+	{
+		$locked = (int) $status;
+		$sql = 'UPDATE '.$this->table_prefix."wwiki_contents SET locked = $locked WHERE wiki_id=$wiki_id "; //in previous version, i was targeting only the last version. I dont care anymore.  
+		$this->db->sql_query($sql);
+	}
+	
+	public function get_lock($post_id){
+		$wiki_id = $this->get_wiki_by_post($post_id);
+		$sql = 'SELECT locked FROM '.$this->table_prefix."wwiki_contents WHERE wiki_id = $wiki_id";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		return $row['locked'];
+	}
+	
 }
 ?>

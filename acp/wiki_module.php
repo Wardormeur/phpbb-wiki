@@ -22,7 +22,7 @@ class wiki_module
 		$this->phpbb_container = $phpbb_container;
 		$this->template = $template;
 		
-		$this->user->add_lang('acp/groups');
+		$this->user->add_lang_ext('wardormeur/wiki','info_acp_wiki');
 
 		$this->page_title = $this->user->lang['ACP_WIKI_TITLE'];
 		$this->tpl_name = 'wiki_body';

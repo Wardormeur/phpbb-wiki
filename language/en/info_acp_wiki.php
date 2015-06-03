@@ -38,7 +38,9 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_WIKI_TITLE'				=> 'Wiki settings !',
 	'POST_WIKI'				=> 'Wiki post?',
+	'ACP_WIKI_SETTINGS'		=> 'Wiki settings',
 	'VERSION_NB'			=> 'Number of previous version saved',
+	'WIKI_EDITION_ONGOING'	=> 'Someone is already editing this post, please wait',
 	'SETTINGS_ERROR'		=> 'There was an error saving your settings. Please submit the back trace with your error report.',
 	'SETTINGS_SUCCESS'		=> 'The settings were successfully saved',
 	)

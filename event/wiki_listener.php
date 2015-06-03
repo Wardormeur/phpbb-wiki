@@ -14,7 +14,8 @@ class wiki_listener implements EventSubscriberInterface
 			'core.viewtopic_modify_post_action_conditions'	=>	'listen_modify_display_editable',
 			'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_editable',
 			'core.posting_modify_template_vars'	=>	'listen_add_make_wiki',
-			'core.submit_post_end'	=>	'listen_add_version'
+			'core.submit_post_end'	=>	'listen_add_version',
+			'core.user_setup'		=>	'set_language_once_and_for_all'
 		);
     }
 	
@@ -38,6 +39,7 @@ class wiki_listener implements EventSubscriberInterface
 		$this->root_path	= $phpbb_root_path;
 		$this->php_ext		= $phpExt;
 		$this->version		= $version;
+
 	}
 	//Can he transform to post to wiki?
 	public function listen_add_make_wiki($event)
@@ -55,18 +57,26 @@ class wiki_listener implements EventSubscriberInterface
 		$this->version->deactivate($this->version->get_wiki_by_post($event['data']['post_id']),$event['post_data']['post_id']);
 	}
 	
-	//Can he edit the wiki post?
+	//Can he edit the wiki post? Display on viewtopic
 	public function listen_modify_display_editable($event)
 	{	
+	
 		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
-			&& ($this->version->is_wiki($event['row']['post_id'])>0) ;
+			&& ($this->version->is_wiki($event['row']['post_id']) > 0 ) ;
 	}
 
-	//Can he edit the wiki post?
+	//Can he edit the wiki post?Display on posting.php
 	public function listen_modify_posting_editable($event)
 	{	
+		$post_id = $event['post_data']['post_id'];
+		$locked = $this->version->get_lock($post_id);
 		$event['force_edit_allowed'] = ($this->auth->acl_get('u_wwiki_edit') || $this->auth->acl_get('a_wwiki_edit') || $this->auth->acl_get('m_wwiki_edit')) 
-			&& ($this->version->is_wiki($event['post_data']['post_id'])>0) ;
+			&& ($this->version->is_wiki($post_id)>0) && !$locked ;
+		if ($event['force_edit_allowed']){
+			$this->version->set_lock($this->version->get_wiki_by_post($post_id),true);
+		}else{//you're allowed to edit, likely, but you cant access it cause either it's locked, or it's not a wiki
+			trigger_error($this->user->lang['WIKI_EDITION_ONGOING']);
+		}
 	}
 	
 	//save a new version when it's a wiki
@@ -83,6 +93,7 @@ class wiki_listener implements EventSubscriberInterface
 			if($wiki == 'on')
 			{// Is active or want to activate
 				$this->version->add_version($wiki_id,$message);
+				$this->version->set_lock($wiki_id,false);
 			}else{//Is inactive or want to deactivate
 				$this->version->deactivate($wiki_id,$post_id);
 			}
@@ -96,6 +107,11 @@ class wiki_listener implements EventSubscriberInterface
 
 		}
 	}
+	
+	public function set_language_once_and_for_all($event){
+		$this->user->add_lang_ext('wardormeur/wiki','info_acp_wiki');	
+	}
+	
 }
 
 ?>
