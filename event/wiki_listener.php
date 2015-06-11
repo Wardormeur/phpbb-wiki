@@ -9,15 +9,15 @@ class wiki_listener implements EventSubscriberInterface
 {
     static public function getSubscribedEvents()
     {
-        return array(
-            'core.delete_posts_before'	=>	'listen_delete_related_post_wiki',
-			'core.viewtopic_modify_post_action_conditions'	=>	'listen_modify_display_editable',
-			'core.modify_posting_auth'	=>	'listen_modify_posting_mods_editable',
-			'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_users_editable',
-			'core.posting_modify_template_vars'	=>	'listen_add_make_wiki',
-			'core.submit_post_end'	=>	'listen_add_version',
-			'core.user_setup'		=>	'set_language_once_and_for_all'
-		);
+			return array(
+			  'core.delete_posts_before'	=>	'listen_delete_related_post_wiki',
+				'core.viewtopic_modify_post_action_conditions'	=>	'listen_modify_display_editable',
+				'core.modify_posting_auth'	=>	'listen_modify_posting_mods_editable',
+				'core.posting_modify_cannot_edit_conditions'	=>	'listen_modify_posting_users_editable',
+				'core.posting_modify_template_vars'	=>	'listen_add_make_wiki',
+				'core.submit_post_end'	=>	'listen_add_version',
+				'core.user_setup'		=>	'set_language_once_and_for_all'
+			);
     }
 
 	public function __construct(
@@ -146,6 +146,7 @@ class wiki_listener implements EventSubscriberInterface
 
 	public function set_language_once_and_for_all($event){
 		$this->user->add_lang_ext('wardormeur/wiki','info_acp_wiki');
+
 	}
 
 }
