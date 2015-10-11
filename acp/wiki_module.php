@@ -22,7 +22,7 @@ class wiki_module
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
 		$this->template = $template;
-		
+
 		$this->user->add_lang_ext('wardormeur/wiki','info_acp_wiki');
 
 		$this->page_title = $this->user->lang['ACP_WIKI_TITLE'];
@@ -37,13 +37,15 @@ class wiki_module
 			}
 			$version_nb = $this->request->variable('version_nb','');
 			$this->config->set('wwiki_version_nb',$version_nb);
+			$wiki_path = $this->request->variable('wiki_path','');
+			$this->config->set('wwiki_wiki_path',$wiki_path);
 			trigger_error($this->user->lang['SETTINGS_SUCCESS'] . adm_back_link($this->u_action));
-	
+
 		}
 		$this->template->assign_var('VERSION_NB', $this->config['wwiki_version_nb']);
-		
-		
+
+
 	}
-	
+
 
 }

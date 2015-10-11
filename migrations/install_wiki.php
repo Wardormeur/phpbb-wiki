@@ -16,21 +16,21 @@ class install_wiki extends \phpbb\db\migration\migration
 	{
 		global $config;
 		// Default settings to start with.
-	
+
 		$config->set('wwiki_version_nb', 3);
-	
-		return(array(	
-			array('permission.add', array('a_wwiki_edit')), 
-			array('permission.add', array('m_wwiki_edit')), 
-			array('permission.add', array('m_wwiki_edit', false)), 
-			array('permission.add', array('u_wwiki_edit')), 
-			array('permission.add', array('u_wwiki_edit', false)), 
+
+		return(array(
+			array('permission.add', array('a_wwiki_edit')),
+			array('permission.add', array('m_wwiki_edit')),
+			array('permission.add', array('m_wwiki_edit', false)),
+			array('permission.add', array('u_wwiki_edit')),
+			array('permission.add', array('u_wwiki_edit', false)),
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',
 				'ACP_WIKI_TITLE'
 			)),
-
+			array('config.add',array('wwiki_version_nb')),
 			array('module.add', array(
 				'acp',
 				'ACP_WIKI_TITLE',
@@ -46,11 +46,11 @@ class install_wiki extends \phpbb\db\migration\migration
 	{
 		return(array(
 			array('config.remove', array('wwiki_version_nb')),
-			array('permission.remove', array('a_wwiki_edit')), 
-			array('permission.remove', array('m_wwiki_edit')), 
-			array('permission.remove', array('m_wwiki_edit', false)), 
-			array('permission.remove', array('u_wwiki_edit')), 
-			array('permission.remove', array('u_wwiki_edit', false)), 
+			array('permission.remove', array('a_wwiki_edit')),
+			array('permission.remove', array('m_wwiki_edit')),
+			array('permission.remove', array('m_wwiki_edit', false)),
+			array('permission.remove', array('u_wwiki_edit')),
+			array('permission.remove', array('u_wwiki_edit', false)),
 			array('module.remove', array(
 				'acp',
 				'ACP_WIKI_TITLE',
@@ -79,11 +79,11 @@ class install_wiki extends \phpbb\db\migration\migration
                 'COLUMNS'        => array(
                     'wiki_id'		=> array('UINT',NULL),
                     'wiki_text'		=> array('MTEXT_UNI', ''),
-					'version_id'	=> array('UINT',0),
-					'wiki_edit_time'	=> array('TIMESTAMP', 0),
-					'wiki_edit_user'	=> array('UINT', 0)
-				
-				),
+										'version_id'	=> array('UINT',0),
+										'wiki_edit_time'	=> array('TIMESTAMP', 0),
+										'wiki_edit_user'	=> array('UINT', 0)
+
+									),
                 'PRIMARY_KEY'        => array('wiki_id','version_id'),
                 'KEYS'                => array(
 						'widi'            => array('INDEX', array('wiki_id','version_id')),
@@ -98,8 +98,8 @@ public function revert_schema()
 {
     return array(
         'drop_tables'        => array(
-			$this->table_prefix. 'wwiki_posts',
-			$this->table_prefix . 'wwiki_contents'
+					$this->table_prefix. 'wwiki_posts',
+					$this->table_prefix . 'wwiki_contents'
         ),
     );
 }

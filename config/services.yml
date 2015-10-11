@@ -7,7 +7,7 @@ services:
             - @user
             - %core.table_prefix%
             - %core.php_ext%
-            - %core.root_path%    
+            - %core.root_path%
     wardormeur.wiki.listener:
         class: wardormeur\wiki\event\wiki_listener
         arguments:

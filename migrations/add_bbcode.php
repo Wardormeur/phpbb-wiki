@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbbgallery\core\migrations;
+namespace wardormeur\wiki\migrations;
 
 class add_bbcode extends \phpbb\db\migration\migration
 {
@@ -19,14 +19,14 @@ class add_bbcode extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('custom', array(array(&$this, 'install_bbcode'))),
+			array('config.add',array('wwiki_path','')),
 		);
 	}
 
 	public function revert_data()
 	{
 		return array(
-			array('custom', array(array(&$this, 'remove_bbcode'))),
+			array('config.remove', array('wwiki_path')),
 		);
 	}
 

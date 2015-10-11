@@ -43,5 +43,6 @@ $lang = array_merge($lang, array(
 	'WIKI_EDITION_ONGOING'	=> 'Someone is already editing this post, please wait',
 	'SETTINGS_ERROR'		=> 'There was an error saving your settings. Please submit the back trace with your error report.',
 	'SETTINGS_SUCCESS'		=> 'The settings were successfully saved',
-	)
+	'WIKI_PATH'		=> 'Path to source wiki',
+	'WIKI_HELPLINE_PATH'	=>'identifier included in the url of the original wiki page, often the name of the page')
 );
