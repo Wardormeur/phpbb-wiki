@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/Wardormeur/phpbb-wiki.png?label=ready&title=Ready)](https://waffle.io/Wardormeur/phpbb-wiki)
 Bridge for content (user/posts..?) from phpbb 3.1+ to Wordpress
 it makes use of the new Symfony 2 events in order to catch the CRUD event of whatever we need
 This plugin has been originally done for the website tellementnomade.org
